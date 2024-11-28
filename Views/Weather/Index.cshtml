@@ -1,0 +1,19 @@
+﻿@model WeatherData
+
+<div style="font-family: Arial; padding: 20px;">
+    <h1>Weather App</h1>
+    <form method="post" asp-action="GetWeather">
+        <label for="city">Enter City:</label>
+        <input type="text" id="city" name="city" required />
+        <button type="submit">Get Weather</button>
+    </form>
+
+    @if (Model != null)
+    {
+        <div style="margin-top: 20px;">
+            <h2>Weather in @Model.Name</h2>
+            <p>Temperature: @Model.Main.Temp°C</p>
+            <p>Humidity: @Model.Main.Humidity%</p>
+        </div>
+    }
+</div>

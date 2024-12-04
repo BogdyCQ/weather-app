@@ -8,6 +8,8 @@
 
 5. Deploy app
 
-6. Give access
+6. Give WebApp access to:
+     - KeyVault/Secrets
+     - StorageAccount
 
 Enjoy!

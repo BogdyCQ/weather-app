@@ -1,6 +1,6 @@
 1. Create keyvault (& ResourceGroup) -> give yourself access to it -> create secret
 
-2. Add it to app (Program.cs)
+2. Add it to app (Program.cs): keyvault uri & secret name + connectionString & tableName
 
 3. Create storage
 

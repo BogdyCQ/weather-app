@@ -1,4 +1,4 @@
-1. Create secret (& ResourceGroup)
+1. Create keyvault (& ResourceGroup) -> give yourself access to it -> create secret
 
 2. Add it to app (Program.cs)
 

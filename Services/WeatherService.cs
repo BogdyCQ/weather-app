@@ -1,15 +1,19 @@
 ﻿using System.Text.Json;
+using WeatherApp.Configs;
 
 public class WeatherService
 {
     private readonly HttpClient _httpClient;
+    private readonly WeatherLogsService _weatherLogsService;
     private readonly string _apiKey;
     private const string BaseUrl = "https://api.openweathermap.org/data/2.5/weather";
 
-    public WeatherService(HttpClient httpClient, string apiKey)
+    public WeatherService(HttpClient httpClient, WeatherLogsService weatherLogsService, WeatherAppConfig config)
     {
         _httpClient = httpClient;
-        _apiKey = apiKey;
+        _weatherLogsService = weatherLogsService;
+        _apiKey = config.ApiKey;
+
     }
 
     public async Task<WeatherData?> GetWeatherAsync(string city)
@@ -19,7 +23,12 @@ public class WeatherService
             return null;
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<WeatherData>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var weatherData = JsonSerializer.Deserialize<WeatherData>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        if (weatherData != null)
+            await _weatherLogsService.LogWeatherData(weatherData);
+
+        return weatherData;
     }
 }
 

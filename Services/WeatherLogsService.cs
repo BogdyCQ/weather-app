@@ -1,15 +1,29 @@
-﻿using System.Text.Json;
+﻿using Azure.Data.Tables;
+using System.Text.Json;
+using WeatherApp.Configs;
 
 public class WeatherLogsService
 {
-    private readonly HttpClient _httpClient;
-    private readonly string _apiKey;
-    private const string BaseUrl = "https://api.openweathermap.org/data/2.5/weather";
+    private readonly string _connectionString;
 
-    public WeatherLogsService(HttpClient httpClient, string apiKey)
+    public WeatherLogsService(HttpClient httpClient, WeatherAppConfig config)
     {
-        _httpClient = httpClient;
-        _apiKey = apiKey;
+        _connectionString = config.StorageConnectionString;
+    }
+
+    public async Task LogWeatherData(WeatherData weatherData)
+    {
+        var serviceClient = new TableServiceClient(_connectionString);
+        var tableClient = serviceClient.GetTableClient("WeatherData");
+
+        var weatherEntity = new TableEntity("PartitionKey", "RowKey")
+        {
+            {"Temperature", "25°C"},
+            {"Condition", "Sunny"},
+            {"Location", "New York"}
+        };
+
+        await tableClient.AddEntityAsync(weatherEntity);
     }
 
     public async Task<WeatherLogData> GetWeatherLogsAsync()

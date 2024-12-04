@@ -1,5 +1,6 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using WeatherApp.Configs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,16 +8,26 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<WeatherService>();
+builder.Services.AddSingleton<WeatherLogsService>();
 builder.Services.AddSingleton<WeatherService>();
 
-var keyVaultUri = new Uri("https://weather-app-keyvault-2.vault.azure.net/");
+var keyVaultUri = new Uri("https://weather-vault-53.vault.azure.net/");
 
 var client = new SecretClient(vaultUri: keyVaultUri, credential: new DefaultAzureCredential());
 
 var apiKeySecret = await client.GetSecretAsync("openweather-api-key");
 string apiKey = apiKeySecret.Value.Value ?? string.Empty;
 
-builder.Services.AddSingleton(apiKey);
+var storageConnectionString = await client.GetSecretAsync("storage-connection-string");
+string connectionString = storageConnectionString.Value.Value ?? string.Empty;
+
+var config = new WeatherAppConfig
+{
+    ApiKey = apiKey,
+    StorageConnectionString = connectionString
+};
+
+builder.Services.AddSingleton(config);
 
 var app = builder.Build();
 

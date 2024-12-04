@@ -16,11 +16,10 @@ public class WeatherLogsService
         var serviceClient = new TableServiceClient(_connectionString);
         var tableClient = serviceClient.GetTableClient("WeatherData");
 
-        var weatherEntity = new TableEntity("PartitionKey", "RowKey")
+        var weatherEntity = new TableEntity(weatherData.Name, Guid.NewGuid().ToString())
         {
-            {"Temperature", "25°C"},
-            {"Condition", "Sunny"},
-            {"Location", "New York"}
+            {"Temperature", weatherData.Main?.Temp},
+            {"Humidity", weatherData.Main?.Humidity}
         };
 
         await tableClient.AddEntityAsync(weatherEntity);

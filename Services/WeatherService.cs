@@ -20,10 +20,12 @@ public class WeatherService
     {
         var response = await _httpClient.GetAsync($"{BaseUrl}?q={city}&appid={_apiKey}&units=metric");
         if (!response.IsSuccessStatusCode)
-            return null;
+            return new WeatherData { IsFormSubmitted = true };
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var weatherData = JsonSerializer.Deserialize<WeatherData>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        weatherData.IsFormSubmitted = true;
 
         if (weatherData != null)
             await _weatherLogsService.LogWeatherData(weatherData);
@@ -35,11 +37,15 @@ public class WeatherService
 public class WeatherData
 {
     public Main? Main { get; set; }
+
     public string? Name { get; set; }
+
+    public bool IsFormSubmitted { get; set; }
 }
 
 public class Main
 {
     public float Temp { get; set; }
+
     public float Humidity { get; set; }
 }

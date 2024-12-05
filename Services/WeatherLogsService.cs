@@ -25,15 +25,31 @@ public class WeatherLogsService
         await tableClient.AddEntityAsync(weatherEntity);
     }
 
-    public async Task<WeatherLogData> GetWeatherLogsAsync()
+    public async Task<List<WeatherLogData>> GetWeatherLogsAsync()
     {
-        return new WeatherLogData();
+        var serviceClient = new TableServiceClient(_connectionString);
+        var tableClient = serviceClient.GetTableClient("WeatherData");
+
+        var logs = new List<WeatherLogData>();
+
+        await foreach (var entity in tableClient.QueryAsync<TableEntity>())
+        {
+            logs.Add(new WeatherLogData 
+            {
+                DateTime = entity.Timestamp.Value.DateTime,
+                CityName = entity.PartitionKey,
+                Temparature = Convert.ToSingle(entity["Temperature"]),
+                Humidity = Convert.ToSingle(entity["Humidity"]),
+            });
+        }
+
+        return logs.OrderByDescending(l => l.DateTime).ToList();
     }
 }
 
 public class WeatherLogData
 {
-    public string DateTime { get; set; }
+    public DateTime DateTime { get; set; }
     
     public string CityName { get; set; }
 

@@ -1,24 +1,41 @@
-﻿@model WeatherData
+﻿@page
+@model WeatherLogData
+@inject WeatherLogsService WeatherLogsService
 
-<div style="font-family: Arial; padding: 20px;">
-    <h1>Weather App</h1>
-    <form method="post" asp-action="GetWeather">
-        <label for="city">Enter City:</label>
-        <input type="text" id="city" name="city" required />
-        <button type="submit">Get Weather</button>
-    </form>
+@{
+    var weatherLogs = await WeatherLogsService.GetWeatherLogsAsync();
+}
 
-    @if (Model != null)
-    {
-        <div style="margin-top: 20px;">
-            <h2>Weather in @Model.Name</h2>
-            <p>Temperature: @Model.Main.Temp°C</p>
-            <p>Humidity: @Model.Main.Humidity%</p>
-        </div>
-    }
-    else {
-        <div style="margin-top: 20px;">
-            <h2>This location does not exist</h2>
-        </div>
-    }
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Logs</title>
+</head>
+<body>
+    <h1 style="margin-bottom: 20px;">Weather Logs</h1>
+    <table border="1" style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th style="padding: 10px; text-align: left;">Check date</th>
+                <th style="padding: 10px; text-align: left;">City</th>
+                <th style="padding: 10px; text-align: left;">Temperature</th>
+                <th style="padding: 10px; text-align: left;">Humidity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in weatherLogs)
+            {
+                <tr>
+                    <td style="padding: 10px;">@log.DateTime</td>
+                    <td style="padding: 10px;">@log.CityName</td>
+                    <td style="padding: 10px;">@log.Temparature</td>
+                    <td style="padding: 10px;">@log.Humidity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+
+</html>

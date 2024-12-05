@@ -8,7 +8,7 @@
         <button type="submit">Get Weather</button>
     </form>
 
-    @if (Model != null)
+    @if (Model != null && Model.Name != null)
     {
         <div style="margin-top: 20px;">
             <h2>Weather in @Model.Name</h2>
@@ -16,7 +16,8 @@
             <p>Humidity: @Model.Main.Humidity%</p>
         </div>
     }
-    else {
+    else if (Model != null && Model.IsFormSubmitted)
+    {
         <div style="margin-top: 20px;">
             <h2>Unavailable location</h2>
         </div>

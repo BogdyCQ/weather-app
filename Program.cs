@@ -10,6 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<WeatherService>();
 builder.Services.AddSingleton<WeatherLogsService>();
 builder.Services.AddSingleton<WeatherService>();
+builder.Services.AddSingleton<EmailService>();
 
 var keyVaultUri = new Uri("https://weather-vault-53.vault.azure.net/");
 
@@ -21,10 +22,14 @@ string apiKey = apiKeySecret.Value.Value ?? string.Empty;
 var storageConnectionString = await client.GetSecretAsync("storage-connection-string");
 string connectionString = storageConnectionString.Value.Value ?? string.Empty;
 
+var sendgridApiKey = await client.GetSecretAsync("sendgrid-key");
+string sendgridKey = sendgridApiKey.Value.Value ?? string.Empty;
+
 var config = new WeatherAppConfig
 {
     ApiKey = apiKey,
-    StorageConnectionString = connectionString
+    StorageConnectionString = connectionString,
+    SendgridKey = sendgridKey
 };
 
 builder.Services.AddSingleton(config);

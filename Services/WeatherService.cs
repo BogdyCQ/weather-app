@@ -5,15 +5,16 @@ public class WeatherService
 {
     private readonly HttpClient _httpClient;
     private readonly WeatherLogsService _weatherLogsService;
+    private readonly EmailService _emailService;
     private readonly string _apiKey;
     private const string BaseUrl = "https://api.openweathermap.org/data/2.5/weather";
 
-    public WeatherService(HttpClient httpClient, WeatherLogsService weatherLogsService, WeatherAppConfig config)
+    public WeatherService(HttpClient httpClient, WeatherLogsService weatherLogsService, EmailService emailService, WeatherAppConfig config)
     {
         _httpClient = httpClient;
         _weatherLogsService = weatherLogsService;
+        _emailService = emailService;
         _apiKey = config.ApiKey;
-
     }
 
     public async Task<WeatherData?> GetWeatherAsync(string city)
@@ -25,10 +26,15 @@ public class WeatherService
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var weatherData = JsonSerializer.Deserialize<WeatherData>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-        weatherData.IsFormSubmitted = true;
-
         if (weatherData != null)
+        {
+            weatherData.IsFormSubmitted = true;
+
             await _weatherLogsService.LogWeatherData(weatherData);
+
+            if (weatherData.Main?.Temp < 0)
+                await _emailService.SendEmail(weatherData);
+        }
 
         return weatherData;
     }

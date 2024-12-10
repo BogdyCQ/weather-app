@@ -1,5 +1,4 @@
 ﻿using Azure.Data.Tables;
-using System.Text.Json;
 using WeatherApp.Configs;
 
 public class WeatherLogsService

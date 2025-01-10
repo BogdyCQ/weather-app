@@ -1,29 +1,19 @@
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using WeatherApp.Configs;
-
+using WeatherApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<WeatherService>();
 builder.Services.AddSingleton<WeatherLogsService>();
-builder.Services.AddSingleton<WeatherService>();
 builder.Services.AddSingleton<EmailService>();
 
 var keyVaultUri = new Uri("https://weather-vault-53.vault.azure.net/");
+var keyVaultService = new KeyVaultService("https://weather-vault-53.vault.azure.net/");
 
-var client = new SecretClient(vaultUri: keyVaultUri, credential: new DefaultAzureCredential());
-
-var apiKeySecret = await client.GetSecretAsync("openweather-api-key");
-string apiKey = apiKeySecret.Value.Value ?? string.Empty;
-
-var storageConnectionString = await client.GetSecretAsync("storage-connection-string");
-string connectionString = storageConnectionString.Value.Value ?? string.Empty;
-
-var sendgridApiKey = await client.GetSecretAsync("sendgrid-key");
-string sendgridKey = sendgridApiKey.Value.Value ?? string.Empty;
+string apiKey = await keyVaultService.GetSecretAsync("openweather-api-key");
+string connectionString = await keyVaultService.GetSecretAsync("storage-connection-string");
+string sendgridKey = await keyVaultService.GetSecretAsync("sendgrid-key");
 
 var config = new WeatherAppConfig
 {

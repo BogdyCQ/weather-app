@@ -1,0 +1,35 @@
+﻿name: Auto-Merge Master to Dev
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Configure Git
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Fetch all branches
+      - name: Fetch all branches
+        run: git fetch --all
+
+      # Merge master into dev
+      - name: Merge master into dev
+        run: |
+          git checkout dev
+          git merge master --no-edit
+
+      # Push the changes back to dev branch
+      - name: Push changes to dev
+        run: git push origin dev

@@ -14,4 +14,8 @@
     <PackageReference Include="SendGrid" Version="9.29.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include=".github\workflows\auto-merge-into-dev.yml" />
+  </ItemGroup>
+
 </Project>

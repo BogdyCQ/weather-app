@@ -28,7 +28,7 @@ jobs:
       - name: Merge master into dev
         run: |
           git checkout dev
-          git merge master --allow-unrelated-histories --no-edit
+          git merge master -X theirs --allow-unrelated-histories --no-edit
 
       # Push the changes back to dev branch
       - name: Push changes to dev
